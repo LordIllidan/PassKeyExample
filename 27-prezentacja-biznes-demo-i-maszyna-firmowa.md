@@ -4,17 +4,66 @@ Dokument łączy: plan slajdów ze skryptem minutowym, ocenę gotowości demo or
 
 ---
 
+## Passkey i WebAuthn — rozszerzony opis
+
+**Passkey** to w praktyce credential FIDO2 / **WebAuthn**: para kluczy kryptograficznych powiązana z kontem i z **domeną usługi** (relying party, `rpId`). Użytkownik potwierdza operację na **authenticatorze** — zwykle biometria lub PIN urządzenia, czasem osobny klucz sprzętowy (NFC/USB).
+
+- **Klucz prywatny** pozostaje na urządzeniu (lub w bezpiecznym magazynie platformy, np. menedżer haseł systemu / przeglądarki) i **nie jest przesyłany** do serwera.
+- **Klucz publiczny** (oraz identyfikator credentialu) trafia do serwera — logowanie to **odpowiedź kryptograficzna** na jednorazowe **challenge** wystawione przez backend, a nie przesłanie współdzielonego sekretu typu hasło.
+- **Discoverable credentials (resident keys):** credential może być „pamiętany” przez urządzenie, co umożliwia logowanie **bez wpisywania identyfikatora** (w zależności od konfiguracji i UX przeglądarki).
+- **Zsynchronizowane passkey (platform sync):** ten sam credential może być dostępny na wielu urządzeniach użytkownika w ekosystemie (np. Apple iCloud Keychain, Google Password Manager). **Passkey „przywiązany” do urządzenia** nie synchronizuje się w ten sposób — inny profil ryzyka i odzyskiwania.
+- **Phishing:** przeglądarka i protokół wiążą operację z **konkretnym originem** i `rpId`; fałszywa strona na innej domenie nie przekaże poprawnego asercji dla Waszej aplikacji (w przeciwieństwie do wielu scenariuszy z kradzieżą hasła lub OTP).
+
+Na prezentacji dla biznesu: passkey to **standard branżowy** (W3C WebAuthn, FIDO Alliance), wspierany przez duże platformy i przeglądarki — nie własny, zamknięty mechanizm jednej firmy.
+
+---
+
+## Korzyści biznesowe — szczegółowy opis
+
+| Obszar | Korzyść | Uwaga do powiedzenia |
+|--------|---------|----------------------|
+| **Doświadczenie klienta i pracownika** | Krótsza ścieżka logowania, mniej pól do wypełniania, mniej „zapomniałem hasła”. | Szczególnie widoczne na mobile i w aplikacjach często używanych. |
+| **Koszty operacyjne (IT / helpdesk)** | Mniej ticketów z resetami hasła i blokadami kont; mniej czasu na procedury odzyskiwania. | Efekt zależy od skali i od tego, czy passkey **zastępuje** hasło, czy jest **dodatkiem** — warto to rozróżnić w planie wdrożenia. |
+| **Ryzyko incydentów** | Osłabienie klasycznych ataków na hasło: stuffing, wycieki haseł z innych serwisów (reuse), część scenariuszy phishingowych względem samego hasła. | Passkey nie usuwa potrzeby ochrony sesji, tokenów API, urządzeń końcowych ani procesów odzyskiwania konta. |
+| **Regulacje i audyty** | Silniejsze uwierzytelnianie wspiera podejście wieloskładnikowe; decyzje compliance zawsze z prawnikiem / audytorem. | Nie obiecywać „zgodności z PCI / DORA / NIS2” wyłącznie przez passkey — to element szerszej architektury. |
+| **Konkurencyjność i wizerunek** | Usługi finansowe, Big Tech i wiele aplikacji B2C już pokazuje logowanie bez hasła — użytkownicy to kojarzą z nowoczesnością i bezpieczeństwem. | W B2B często passkey **uzupełnia** SSO (SAML/OIDC), zamiast go zastępować. |
+| **Skalowanie produktu** | Ten sam wzorzec API (rejestracja / asercja) dla web i wielu platform, zamiast wielu odrębnych, niestandardowych hacków. | Koszt wdrożenia to integracja, testy, UX odzyskiwania i wsparcie użytkowników. |
+
+**Jedno zdanie na zakończenie slajdu korzyści:** inwestycja w passkey to inwestycja w **standard**, **UX** i **redukcję najczęstszych klas problemów z hasłami**, przy świadomym zaplanowaniu odzyskiwania konta i polityki urządzeń.
+
+---
+
+## Inne techniki uwierzytelniania — kontekst i porównanie
+
+Krótki przegląd technik, które audytorium (biznes + security) zwykle zestawia z passkey:
+
+| Technika | Idea | Mocne strony | Ograniczenia względem passkey |
+|----------|------|--------------|--------------------------------|
+| **Hasło** | Współdzielony sekret pamiętany przez użytkownika; na serwerze zwykle hash. | Proste do zrozumienia, wszechobecne. | Phishing, reuse, słabe hasła, koszty resetów; serwer musi chronić bazy sekretów (lub ich pochodnych). |
+| **Hasło + TOTP (aplikacja authenticator)** | Drugi składnik oparty o czasowy kod z sekretu. | Bez SMS; powszechne w firmach. | Phishing w czasie rzeczywistym (proxy), utrata telefonu, koszt onboardingu; użytkownik musi wpisywać kody. |
+| **SMS / e-mail OTP** | Jednorazowy kod w kanale. | Znane użytkownikom, łatwe wdrożyć. | SIM swap, opóźnienia, koszty, słabsza odporność na phishing niż WebAuthn; regulatory często ograniczają SMS jako jedyny czynnik. |
+| **Magic link (e-mail)** | Logowanie przez jednorazowy link. | Bez hasła z perspektywy UX. | Zależność od skrzynki; link może być przechwycony; nie zastępuje silnego powiązania z urządzeniem jak passkey. |
+| **OAuth 2.0 / OpenID Connect (np. „Zaloguj przez …”)** | Zaufanie zewnętrznemu IdP; tokeny i sesja u Was. | Szybki start, SSO, mniej haseł u Was — jeśli użytkownik i tak ma konto u IdP. | Zależność od dostawcy; polityka MFA po stronie IdP; to **federacja tożsamości**, nie to samo co lokalny passkey u Waszej aplikacji (choć IdP może oferować passkey po swojej stronie). |
+| **Klucz sprzętowy FIDO (U2F/FIDO2)** | Fizyczny token USB/NFC/BLE. | Bardzo silny czynnik, popularny w adminach i wysokim ryzyku. | Koszt, logistyka, gubienie tokena; passkey na telefonie często wygodniejszy dla masowego B2C. |
+| **Certyfikaty klienta (mTLS)** | TLS z certyfikatem po stronie klienta. | Silne w machine-to-machine i niektórych sieciach firmowych. | Trudniejsze dla typowego użytkownika konsumenckiego niż WebAuthn w przeglądarce. |
+| **Biometria „sama” (bez WebAuthn)** | Odcisk twarzy na urządzeniu odblokowuje coś lokalnie. | Wygoda. | Jeśli nie jest powiązana ze standardem FIDO/WebAuthn i z serwerem przez asercje, **nie** jest tym samym co passkey w sensie protokołu internetowego. |
+
+**Passkey** najczęściej **współistnieje** z innymi metodami: np. SSO dla pracowników, passkey lub hasło+MFA dla partnerów, stopniowe włączanie passkey dla klientów z jasnym procesem backupu i wsparcia.
+
+---
+
 ## 1. Slajdy (tytuły)
 
 1. Tytuł — Passkey / WebAuthn w praktyce (demo: PassKeyExample).
 2. Problem — hasła, phishing, koszty wsparcia (krótko).
-3. Czym jest passkey — FIDO2 / WebAuthn; klucz prywatny na urządzeniu, publiczny u dostawcy usługi.
-4. Korzyści biznesowe — UX, mniej resetów, mniej klasycznych wektorów na hasło, oczekiwania rynku (bez obietnic compliance).
-5. Co dostaje security — wiązanie z domeną (rpId), brak „sekretu hasła” w stylu współdzielonego sekretu serwer–użytkownik (model kryptograficzny inny niż hasło); uczciwie: odzysk konta, polityka urządzeń, passkey zsynchronizowane w chmurze platformy.
-6. Architektura demo — Angular + API .NET, PostgreSQL, opcjonalnie RabbitMQ; przepływ register/start → finish, login/start → finish.
-7. Live demo — pełny stack Docker (zalecane): utworzenie użytkownika (Swagger/curl), rejestracja passkey, logowanie.
-8. Podsumowanie — jeden standard, ścieżka do produkcji wymaga twardej weryfikacji kryptograficznej (w demo uproszczenia).
-9. Pytania.
+3. Czym jest passkey — FIDO2 / WebAuthn; klucz prywatny na urządzeniu, publiczny u usługi; sync vs device-bound; szczegóły w sekcji „Passkey i WebAuthn — rozszerzony opis”.
+4. Passkey a inne metody — hasło, TOTP, SMS, magic link, OAuth/OIDC, klucz sprzętowy, mTLS (skrót: sekcja „Inne techniki uwierzytelniania”).
+5. Korzyści biznesowe — UX, koszty helpdesku, ryzyko, konkurencyjność; szczegóły w sekcji „Korzyści biznesowe — szczegółowy opis” (bez obietnic compliance bez prawnika).
+6. Co dostaje security — wiązanie z domeną (rpId), brak „sekretu hasła” w stylu współdzielonego sekretu serwer–użytkownik (model kryptograficzny inny niż hasło); uczciwie: odzysk konta, polityka urządzeń, passkey zsynchronizowane w chmurze platformy.
+7. Architektura demo — Angular + API .NET, PostgreSQL, opcjonalnie RabbitMQ; przepływ register/start → finish, login/start → finish.
+8. Live demo — pełny stack Docker (zalecane): utworzenie użytkownika (Swagger/curl), rejestracja passkey, logowanie.
+9. Podsumowanie — jeden standard, ścieżka do produkcji wymaga twardej weryfikacji kryptograficznej (w demo uproszczenia).
+10. Pytania.
 
 ---
 
@@ -23,8 +72,9 @@ Dokument łączy: plan slajdów ze skryptem minutowym, ocenę gotowości demo or
 | Czas | Treść |
 |------|--------|
 | 0:00–0:45 | Powitanie, kim jesteście, że to aplikacja demonstracyjna, nie produkcja. Agenda. |
-| 0:45–3:30 | Slajd „problem + czym jest passkey”: hasła jako koszt; passkey jako logowanie kryptograficzne z potwierdzeniem na urządzeniu. |
-| 3:30–6:30 | Korzyści biznesowe: szybsze logowanie, mniej ticketów, mniej credential stuffing względem samego hasła; ostrożnie o RODO/ISO — kierunek, nie obietnica. |
+| 0:45–3:00 | Problem + czym jest passkey (FIDO2/WebAuthn, prywatny vs publiczny klucz, sync vs urządzenie). |
+| 3:00–4:00 | Opcjonalnie slajd „inne metody”: jedna tabela lub 3 przykłady (hasło+TOTP, OAuth, klucz sprzętowy) — passkey jako uzupełnienie, nie zawsze zamiennik SSO. |
+| 4:00–6:30 | Korzyści biznesowe: tabela z dokumentu — UX, helpdesk, ryzyko, rynek; bez obietnic compliance bez prawnika. |
 | 6:30–9:30 | Dla security: phishing i origin, challenge po stronie serwera, co jest w bazie (w demo uproszczone przechowywanie/weryfikacja — zaznaczyć). Otwarcie na pytania o attestation, recovery, bound vs synced. |
 | 9:30–12:30 | Demo: Docker, `https://localhost:4443`, utworzenie użytkownika, rejestracja passkey, logowanie. |
 | 12:30–14:00 | Podsumowanie trzech zdań + przygotowane zrzuty ekranu na wypadek sieci lub USB. |
@@ -117,7 +167,7 @@ cd ..\..\frontend; npm ci; npm run build
 
 ## 6. Powiązane dokumenty
 
-- [Przegląd projektu](01-przeglad-projektu.md)
-- [Passkey Implementation](02-passkey-implementation.md)
-- [Quick Start](../../QUICK_START.md) (uwaga: ścieżka developerska vs Docker — patrz sekcja 4 powyżej)
+- [Przegląd projektu](docs/09-projekty/01-przeglad-projektu.md)
+- [Passkey Implementation](docs/09-projekty/02-passkey-implementation.md)
+- [Quick Start](QUICK_START.md) (uwaga: ścieżka developerska vs Docker — patrz sekcja 4 powyżej)
 
