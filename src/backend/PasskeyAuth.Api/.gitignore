@@ -1,0 +1,11 @@
+bin/
+obj/
+*.user
+*.suo
+*.cache
+appsettings.Production.json
+*.db
+*.db-shm
+*.db-wal
+
+

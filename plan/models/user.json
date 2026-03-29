@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User",
+  "description": "Model użytkownika systemu",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unikalny identyfikator użytkownika"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Adres email użytkownika",
+      "maxLength": 255
+    },
+    "userName": {
+      "type": "string",
+      "description": "Nazwa użytkownika",
+      "maxLength": 100
+    },
+    "name": {
+      "type": "string",
+      "description": "Imię i nazwisko użytkownika",
+      "maxLength": 255
+    },
+    "passwordHash": {
+      "type": "string",
+      "description": "Hash hasła (bcrypt/Argon2)",
+      "readOnly": true
+    },
+    "isEmailVerified": {
+      "type": "boolean",
+      "description": "Czy email został zweryfikowany",
+      "default": false
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Czy konto jest aktywne",
+      "default": true
+    },
+    "isLocked": {
+      "type": "boolean",
+      "description": "Czy konto jest zablokowane",
+      "default": false
+    },
+    "lockedUntil": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data odblokowania konta (jeśli zablokowane)",
+      "nullable": true
+    },
+    "failedLoginAttempts": {
+      "type": "integer",
+      "description": "Liczba nieudanych prób logowania",
+      "default": 0,
+      "minimum": 0
+    },
+    "lastLoginAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data ostatniego logowania",
+      "nullable": true
+    },
+    "source": {
+      "type": "string",
+      "enum": ["local", "ldap", "oauth", "scim"],
+      "description": "Źródło użytkownika",
+      "default": "local"
+    },
+    "externalId": {
+      "type": "string",
+      "description": "Identyfikator zewnętrzny (dla użytkowników z systemów zewnętrznych)",
+      "nullable": true
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Role użytkownika"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data utworzenia"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data ostatniej aktualizacji",
+      "nullable": true
+    }
+  },
+  "required": ["id", "email", "createdAt"],
+  "additionalProperties": false
+}
+
+

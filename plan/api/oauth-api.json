@@ -1,0 +1,151 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "OAuth API",
+    "version": "1.0.0",
+    "description": "API do integracji z providerami OAuth"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/api/v1",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/auth/oauth/{provider}/authorize": {
+      "get": {
+        "tags": ["OAuth"],
+        "summary": "Autoryzacja przez providera OAuth",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["google", "keycloak", "twitter", "facebook", "microsoft", "github"]
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect do providera OAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/auth/oauth/{provider}/callback": {
+      "get": {
+        "tags": ["OAuth"],
+        "summary": "Callback od providera OAuth",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect do frontendu z tokenami"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/auth/oauth/providers": {
+      "get": {
+        "tags": ["OAuth"],
+        "summary": "Lista dostępnych providerów OAuth",
+        "responses": {
+          "200": {
+            "description": "Lista providerów",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OAuthProvider"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OAuthProvider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["OAuth2", "OIDC", "OAuth1"]
+          },
+          "isEnabled": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "iconUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Nieprawidłowe żądanie"
+      },
+      "NotFound": {
+        "description": "Zasób nie znaleziony"
+      }
+    }
+  }
+}
+
+

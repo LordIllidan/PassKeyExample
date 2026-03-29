@@ -1,0 +1,312 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Permissions",
+  "description": "Definicja wszystkich uprawnień w systemie",
+  "type": "object",
+  "properties": {
+    "permissions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Permission"
+      }
+    }
+  },
+  "definitions": {
+    "Permission": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nazwa uprawnienia (format: resource:action:scope)"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Wyświetlana nazwa uprawnienia"
+        },
+        "description": {
+          "type": "string",
+          "description": "Opis uprawnienia"
+        },
+        "category": {
+          "type": "string",
+          "description": "Kategoria uprawnienia"
+        }
+      },
+      "required": ["name", "displayName", "category"]
+    }
+  },
+  "permissions": [
+    {
+      "name": "auth:login",
+      "displayName": "Logowanie",
+      "description": "Możliwość logowania do systemu",
+      "category": "Authentication"
+    },
+    {
+      "name": "auth:register",
+      "displayName": "Rejestracja",
+      "description": "Możliwość rejestracji nowego konta",
+      "category": "Authentication"
+    },
+    {
+      "name": "auth:logout",
+      "displayName": "Wylogowanie",
+      "description": "Możliwość wylogowania",
+      "category": "Authentication"
+    },
+    {
+      "name": "auth:refresh",
+      "displayName": "Odświeżenie tokena",
+      "description": "Możliwość odświeżenia tokena",
+      "category": "Authentication"
+    },
+    {
+      "name": "auth:me",
+      "displayName": "Informacje o użytkowniku",
+      "description": "Pobranie informacji o zalogowanym użytkowniku",
+      "category": "Authentication"
+    },
+    {
+      "name": "passkey:register",
+      "displayName": "Rejestracja passkey",
+      "description": "Możliwość rejestracji passkey",
+      "category": "Passkey"
+    },
+    {
+      "name": "passkey:login",
+      "displayName": "Logowanie passkey",
+      "description": "Możliwość logowania przez passkey",
+      "category": "Passkey"
+    },
+    {
+      "name": "passkey:list",
+      "displayName": "Lista passkey",
+      "description": "Pobranie listy passkey użytkownika",
+      "category": "Passkey"
+    },
+    {
+      "name": "passkey:delete",
+      "displayName": "Usunięcie passkey",
+      "description": "Możliwość usunięcia passkey",
+      "category": "Passkey"
+    },
+    {
+      "name": "passkey:update",
+      "displayName": "Aktualizacja passkey",
+      "description": "Możliwość aktualizacji passkey",
+      "category": "Passkey"
+    },
+    {
+      "name": "2fa:totp:setup",
+      "displayName": "Konfiguracja TOTP",
+      "description": "Możliwość konfiguracji TOTP 2FA",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:totp:verify",
+      "displayName": "Weryfikacja TOTP",
+      "description": "Możliwość weryfikacji kodu TOTP",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:totp:login",
+      "displayName": "Logowanie z TOTP",
+      "description": "Możliwość logowania z kodem TOTP",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:sms:setup",
+      "displayName": "Konfiguracja SMS 2FA",
+      "description": "Możliwość konfiguracji SMS 2FA",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:sms:verify",
+      "displayName": "Weryfikacja SMS",
+      "description": "Możliwość weryfikacji kodu SMS",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:email:setup",
+      "displayName": "Konfiguracja Email 2FA",
+      "description": "Możliwość konfiguracji Email 2FA",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:email:verify",
+      "displayName": "Weryfikacja Email",
+      "description": "Możliwość weryfikacji kodu Email",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:backup-codes:generate",
+      "displayName": "Generowanie backup codes",
+      "description": "Możliwość generowania backup codes",
+      "category": "2FA"
+    },
+    {
+      "name": "2fa:backup-codes:verify",
+      "displayName": "Weryfikacja backup code",
+      "description": "Możliwość weryfikacji backup code",
+      "category": "2FA"
+    },
+    {
+      "name": "user:read:own",
+      "displayName": "Odczyt własnego profilu",
+      "description": "Pobranie informacji o własnym profilu",
+      "category": "User"
+    },
+    {
+      "name": "user:update:own",
+      "displayName": "Aktualizacja własnego profilu",
+      "description": "Możliwość aktualizacji własnego profilu",
+      "category": "User"
+    },
+    {
+      "name": "user:read",
+      "displayName": "Odczyt użytkowników",
+      "description": "Pobranie informacji o użytkownikach",
+      "category": "User"
+    },
+    {
+      "name": "user:*",
+      "displayName": "Wszystkie operacje na użytkownikach",
+      "description": "Pełny dostęp do operacji na użytkownikach",
+      "category": "User"
+    },
+    {
+      "name": "admin:users:read",
+      "displayName": "Odczyt użytkowników (admin)",
+      "description": "Pobranie listy wszystkich użytkowników",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:users:update",
+      "displayName": "Aktualizacja użytkowników (admin)",
+      "description": "Możliwość aktualizacji użytkowników",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:users:lock",
+      "displayName": "Blokowanie użytkowników",
+      "description": "Możliwość blokowania kont użytkowników",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:users:unlock",
+      "displayName": "Odblokowanie użytkowników",
+      "description": "Możliwość odblokowania kont użytkowników",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:oauth-providers:read",
+      "displayName": "Odczyt providerów OAuth",
+      "description": "Pobranie listy providerów OAuth",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:oauth-providers:create",
+      "displayName": "Tworzenie providera OAuth",
+      "description": "Możliwość tworzenia nowego providera OAuth",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:oauth-providers:update",
+      "displayName": "Aktualizacja providera OAuth",
+      "description": "Możliwość aktualizacji providera OAuth",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:oauth-providers:delete",
+      "displayName": "Usunięcie providera OAuth",
+      "description": "Możliwość usunięcia providera OAuth",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:ip-whitelist:read",
+      "displayName": "Odczyt IP whitelist",
+      "description": "Pobranie listy IP whitelist",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:ip-whitelist:create",
+      "displayName": "Dodanie IP do whitelist",
+      "description": "Możliwość dodania IP do whitelist",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:ip-whitelist:delete",
+      "displayName": "Usunięcie IP z whitelist",
+      "description": "Możliwość usunięcia IP z whitelist",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:ip-blacklist:read",
+      "displayName": "Odczyt IP blacklist",
+      "description": "Pobranie listy IP blacklist",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:ip-blacklist:create",
+      "displayName": "Dodanie IP do blacklist",
+      "description": "Możliwość dodania IP do blacklist",
+      "category": "Admin"
+    },
+    {
+      "name": "admin:ip-blacklist:delete",
+      "displayName": "Usunięcie IP z blacklist",
+      "description": "Możliwość usunięcia IP z blacklist",
+      "category": "Admin"
+    },
+    {
+      "name": "audit:logs:read",
+      "displayName": "Odczyt logów audit",
+      "description": "Pobranie logów audit",
+      "category": "Audit"
+    },
+    {
+      "name": "audit:alerts:read",
+      "displayName": "Odczyt alertów",
+      "description": "Pobranie alertów bezpieczeństwa",
+      "category": "Audit"
+    },
+    {
+      "name": "audit:*",
+      "displayName": "Wszystkie operacje audit",
+      "description": "Pełny dostęp do operacji audit",
+      "category": "Audit"
+    },
+    {
+      "name": "security:alerts:read",
+      "displayName": "Odczyt alertów bezpieczeństwa",
+      "description": "Pobranie alertów bezpieczeństwa",
+      "category": "Security"
+    },
+    {
+      "name": "security:alerts:resolve",
+      "displayName": "Rozwiązanie alertu",
+      "description": "Możliwość oznaczenia alertu jako rozwiązany",
+      "category": "Security"
+    },
+    {
+      "name": "auth:*",
+      "displayName": "Wszystkie operacje autentykacji",
+      "description": "Pełny dostęp do operacji autentykacji",
+      "category": "Authentication"
+    },
+    {
+      "name": "passkey:*",
+      "displayName": "Wszystkie operacje passkey",
+      "description": "Pełny dostęp do operacji passkey",
+      "category": "Passkey"
+    },
+    {
+      "name": "2fa:*",
+      "displayName": "Wszystkie operacje 2FA",
+      "description": "Pełny dostęp do operacji 2FA",
+      "category": "2FA"
+    }
+  ]
+}
+
+

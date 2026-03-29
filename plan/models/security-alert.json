@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SecurityAlert",
+  "description": "Model alertu bezpieczeństwa",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unikalny identyfikator alertu"
+    },
+    "alertType": {
+      "type": "string",
+      "enum": ["BruteForce", "NewLocation", "SuspiciousActivity", "MultipleFailedLogins", "Anomaly"],
+      "description": "Typ alertu"
+    },
+    "title": {
+      "type": "string",
+      "description": "Tytuł alertu",
+      "maxLength": 255
+    },
+    "message": {
+      "type": "string",
+      "description": "Wiadomość alertu"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["Info", "Warning", "Error", "Critical"],
+      "description": "Poziom ważności"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identyfikator użytkownika",
+      "nullable": true
+    },
+    "ipAddress": {
+      "type": "string",
+      "format": "ipv4",
+      "description": "Adres IP",
+      "nullable": true
+    },
+    "isResolved": {
+      "type": "boolean",
+      "description": "Czy alert został rozwiązany",
+      "default": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data utworzenia"
+    },
+    "resolvedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data rozwiązania",
+      "nullable": true
+    }
+  },
+  "required": ["id", "alertType", "title", "message", "severity", "isResolved", "createdAt"],
+  "additionalProperties": false
+}
+
+

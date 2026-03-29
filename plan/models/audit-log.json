@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AuditLog",
+  "description": "Model logu audit",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unikalny identyfikator logu"
+    },
+    "eventType": {
+      "type": "string",
+      "enum": ["Authentication", "Authorization", "UserManagement", "Configuration", "Security", "System"],
+      "description": "Typ eventu"
+    },
+    "eventName": {
+      "type": "string",
+      "description": "Nazwa eventu (np. 'UserLogin', 'PasswordChanged')",
+      "maxLength": 100
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["Info", "Warning", "Error", "Critical"],
+      "description": "Poziom ważności"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identyfikator użytkownika",
+      "nullable": true
+    },
+    "userEmail": {
+      "type": "string",
+      "format": "email",
+      "description": "Email użytkownika",
+      "nullable": true
+    },
+    "userName": {
+      "type": "string",
+      "description": "Nazwa użytkownika",
+      "nullable": true
+    },
+    "ipAddress": {
+      "type": "string",
+      "format": "ipv4",
+      "description": "Adres IP",
+      "nullable": true
+    },
+    "userAgent": {
+      "type": "string",
+      "description": "User agent",
+      "nullable": true
+    },
+    "requestId": {
+      "type": "string",
+      "description": "Identyfikator requestu",
+      "nullable": true
+    },
+    "sessionId": {
+      "type": "string",
+      "description": "Identyfikator sesji",
+      "nullable": true
+    },
+    "message": {
+      "type": "string",
+      "description": "Wiadomość logu",
+      "nullable": true
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Dodatkowe metadane (JSON)",
+      "additionalProperties": true
+    },
+    "success": {
+      "type": "boolean",
+      "description": "Czy operacja zakończyła się sukcesem",
+      "default": true
+    },
+    "errorMessage": {
+      "type": "string",
+      "description": "Komunikat błędu (jeśli success = false)",
+      "nullable": true
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Znacznik czasu"
+    }
+  },
+  "required": ["id", "eventType", "eventName", "severity", "success", "timestamp"],
+  "additionalProperties": false
+}
+
+

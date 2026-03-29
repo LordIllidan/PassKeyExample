@@ -1,0 +1,99 @@
+name: passkey-infra
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: passkey-postgres
+    environment:
+      POSTGRES_DB: passkey_db
+      POSTGRES_USER: passkey_user
+      POSTGRES_PASSWORD: passkey_password
+    ports:
+      - "5632:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U passkey_user -d passkey_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - passkey-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: passkey-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: passkey_user
+      RABBITMQ_DEFAULT_PASS: passkey_password
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - passkey-network
+
+  backend:
+    build:
+      context: ../src/backend/PasskeyAuth.Api
+      dockerfile: Dockerfile
+    container_name: passkey-backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5200
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=passkey_db;Username=passkey_user;Password=passkey_password
+      - WebAuthn__RpId=localhost
+      - WebAuthn__RpName=Passkey Auth
+      - WebAuthn__Origin=https://localhost:4443
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=passkey_user
+      - RabbitMQ__Password=passkey_password
+      - RabbitMQ__VirtualHost=/
+    ports:
+      - "5200:5200"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - passkey-network
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ../src/frontend
+      dockerfile: Dockerfile
+    container_name: passkey-frontend
+    ports:
+      - "4400:80"
+      - "4443:443"
+    depends_on:
+      - backend
+    networks:
+      - passkey-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+
+networks:
+  passkey-network:
+    driver: bridge

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BackupCode",
+  "description": "Model backup code dla 2FA",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unikalny identyfikator backup code"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identyfikator użytkownika"
+    },
+    "codeHash": {
+      "type": "string",
+      "description": "Hash backup code (stored in DB)",
+      "readOnly": true
+    },
+    "isUsed": {
+      "type": "boolean",
+      "description": "Czy kod został użyty",
+      "default": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data utworzenia"
+    },
+    "usedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data użycia",
+      "nullable": true
+    }
+  },
+  "required": ["id", "userId", "codeHash", "isUsed", "createdAt"],
+  "additionalProperties": false
+}
+
+

@@ -1,0 +1,462 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Passkey API",
+    "version": "1.0.0",
+    "description": "API do zarządzania passkey (WebAuthn)"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/api/v1",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/auth/passkey/register/start": {
+      "post": {
+        "tags": ["Passkey"],
+        "summary": "Rozpoczęcie rejestracji passkey",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PublicKeyCredentialCreationOptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicKeyCredentialCreationOptions"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/passkey/register/finish": {
+      "post": {
+        "tags": ["Passkey"],
+        "summary": "Zakończenie rejestracji passkey",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinishPasskeyRegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Passkey zarejestrowany",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasskeyCredential"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/auth/passkey/login/start": {
+      "post": {
+        "tags": ["Passkey"],
+        "summary": "Rozpoczęcie logowania passkey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PublicKeyCredentialRequestOptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicKeyCredentialRequestOptions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/passkey/login/finish": {
+      "post": {
+        "tags": ["Passkey"],
+        "summary": "Zakończenie logowania passkey",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinishPasskeyLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logowanie udane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/passkey": {
+      "get": {
+        "tags": ["Passkey"],
+        "summary": "Lista passkey użytkownika",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista passkey",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PasskeyCredential"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/passkey/{id}": {
+      "delete": {
+        "tags": ["Passkey"],
+        "summary": "Usunięcie passkey",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Passkey usunięty"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Passkey"],
+        "summary": "Aktualizacja nazwy passkey",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Passkey zaktualizowany",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasskeyCredential"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FinishPasskeyRegistrationRequest": {
+        "type": "object",
+        "required": ["userId", "credentialId", "publicKey", "attestationObject", "clientDataJSON"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "credentialId": {
+            "type": "string"
+          },
+          "publicKey": {
+            "type": "string"
+          },
+          "attestationObject": {
+            "type": "string"
+          },
+          "clientDataJSON": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "FinishPasskeyLoginRequest": {
+        "type": "object",
+        "required": ["credentialId", "authenticatorData", "clientDataJSON", "signature"],
+        "properties": {
+          "credentialId": {
+            "type": "string"
+          },
+          "authenticatorData": {
+            "type": "string"
+          },
+          "clientDataJSON": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "userHandle": {
+            "type": "string"
+          }
+        }
+      },
+      "PublicKeyCredentialCreationOptions": {
+        "type": "object",
+        "properties": {
+          "challenge": {
+            "type": "string"
+          },
+          "rp": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "displayName": {
+                "type": "string"
+              }
+            }
+          },
+          "pubKeyCredParams": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "authenticatorSelection": {
+            "type": "object"
+          },
+          "timeout": {
+            "type": "integer"
+          },
+          "attestation": {
+            "type": "string"
+          }
+        }
+      },
+      "PublicKeyCredentialRequestOptions": {
+        "type": "object",
+        "properties": {
+          "challenge": {
+            "type": "string"
+          },
+          "rpId": {
+            "type": "string"
+          },
+          "allowCredentials": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "userVerification": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "integer"
+          }
+        }
+      },
+      "PasskeyCredential": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "deviceType": {
+            "type": "string",
+            "enum": ["platform", "cross-platform"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AuthResult": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expiresIn": {
+            "type": "integer"
+          },
+          "user": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Nieprawidłowe żądanie"
+      },
+      "Unauthorized": {
+        "description": "Brak autoryzacji"
+      },
+      "NotFound": {
+        "description": "Zasób nie znaleziony"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
+
+

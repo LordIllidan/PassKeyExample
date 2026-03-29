@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Roles",
+  "description": "Definicja ról w systemie",
+  "type": "object",
+  "properties": {
+    "roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Role"
+      }
+    }
+  },
+  "definitions": {
+    "Role": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unikalny identyfikator roli"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nazwa roli",
+          "enum": ["User", "Admin", "SecurityAdmin", "Auditor"]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Wyświetlana nazwa roli"
+        },
+        "description": {
+          "type": "string",
+          "description": "Opis roli"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Lista uprawnień (nazwy)"
+        },
+        "isSystemRole": {
+          "type": "boolean",
+          "description": "Czy rola jest systemowa (nie można jej usunąć)",
+          "default": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data utworzenia"
+        }
+      },
+      "required": ["id", "name", "displayName", "permissions"]
+    }
+  },
+  "roles": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "User",
+      "displayName": "Użytkownik",
+      "description": "Podstawowa rola użytkownika - dostęp do własnego konta",
+      "permissions": [
+        "auth:login",
+        "auth:register",
+        "auth:logout",
+        "auth:refresh",
+        "auth:me",
+        "passkey:register",
+        "passkey:login",
+        "passkey:list",
+        "passkey:delete",
+        "passkey:update",
+        "2fa:totp:setup",
+        "2fa:totp:verify",
+        "2fa:totp:login",
+        "2fa:sms:setup",
+        "2fa:sms:verify",
+        "2fa:email:setup",
+        "2fa:email:verify",
+        "2fa:backup-codes:generate",
+        "2fa:backup-codes:verify",
+        "user:read:own",
+        "user:update:own"
+      ],
+      "isSystemRole": true,
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "name": "Admin",
+      "displayName": "Administrator",
+      "description": "Pełny dostęp administracyjny do systemu",
+      "permissions": [
+        "auth:*",
+        "passkey:*",
+        "2fa:*",
+        "user:*",
+        "admin:users:read",
+        "admin:users:update",
+        "admin:users:lock",
+        "admin:users:unlock",
+        "admin:oauth-providers:read",
+        "admin:oauth-providers:create",
+        "admin:oauth-providers:update",
+        "admin:oauth-providers:delete",
+        "admin:ip-whitelist:read",
+        "admin:ip-whitelist:create",
+        "admin:ip-whitelist:delete",
+        "admin:ip-blacklist:read",
+        "admin:ip-blacklist:create",
+        "admin:ip-blacklist:delete",
+        "audit:logs:read"
+      ],
+      "isSystemRole": true,
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000003",
+      "name": "SecurityAdmin",
+      "displayName": "Administrator Bezpieczeństwa",
+      "description": "Dostęp do funkcji bezpieczeństwa i audit",
+      "permissions": [
+        "auth:*",
+        "passkey:*",
+        "2fa:*",
+        "user:read",
+        "admin:users:read",
+        "admin:users:lock",
+        "admin:users:unlock",
+        "admin:ip-whitelist:*",
+        "admin:ip-blacklist:*",
+        "audit:*",
+        "security:alerts:read",
+        "security:alerts:resolve"
+      ],
+      "isSystemRole": true,
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000004",
+      "name": "Auditor",
+      "displayName": "Audytor",
+      "description": "Tylko odczyt logów audit i alertów",
+      "permissions": [
+        "audit:logs:read",
+        "audit:alerts:read",
+        "user:read"
+      ],
+      "isSystemRole": true,
+      "createdAt": "2024-01-01T00:00:00Z"
+    }
+  ]
+}
+
+

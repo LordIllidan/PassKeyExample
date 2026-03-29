@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Session",
+  "description": "Model sesji użytkownika",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unikalny identyfikator sesji"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identyfikator użytkownika"
+    },
+    "accessToken": {
+      "type": "string",
+      "description": "JWT access token",
+      "readOnly": true
+    },
+    "refreshToken": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Refresh token identifier"
+    },
+    "refreshTokenHash": {
+      "type": "string",
+      "description": "Hash refresh token (stored in DB)",
+      "readOnly": true
+    },
+    "ipAddress": {
+      "type": "string",
+      "format": "ipv4",
+      "description": "Adres IP użytkownika",
+      "nullable": true
+    },
+    "userAgent": {
+      "type": "string",
+      "description": "User agent przeglądarki",
+      "nullable": true
+    },
+    "deviceFingerprint": {
+      "type": "string",
+      "description": "Device fingerprint",
+      "nullable": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data wygaśnięcia sesji"
+    },
+    "refreshTokenExpiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data wygaśnięcia refresh token"
+    },
+    "isRevoked": {
+      "type": "boolean",
+      "description": "Czy sesja została odwołana",
+      "default": false
+    },
+    "revokedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data odwołania sesji",
+      "nullable": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data utworzenia"
+    }
+  },
+  "required": ["id", "userId", "refreshToken", "expiresAt", "refreshTokenExpiresAt", "createdAt"],
+  "additionalProperties": false
+}
+
+

@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IpFilter",
+  "description": "Model filtra IP (whitelist/blacklist)",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unikalny identyfikator filtra"
+    },
+    "ipAddress": {
+      "type": "string",
+      "format": "ipv4",
+      "description": "Adres IP"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["Whitelist", "Blacklist"],
+      "description": "Typ filtra"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Powód dodania do listy",
+      "nullable": true
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Czy filtr jest aktywny",
+      "default": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data utworzenia"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data wygaśnięcia (opcjonalnie)",
+      "nullable": true
+    }
+  },
+  "required": ["id", "ipAddress", "type", "isActive", "createdAt"],
+  "additionalProperties": false
+}
+
+

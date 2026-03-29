@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Role Permissions Mapping",
+  "description": "Mapowanie ról do uprawnień",
+  "type": "object",
+  "properties": {
+    "mappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/RolePermissionMapping"
+      }
+    }
+  },
+  "definitions": {
+    "RolePermissionMapping": {
+      "type": "object",
+      "properties": {
+        "roleName": {
+          "type": "string",
+          "enum": ["User", "Admin", "SecurityAdmin", "Auditor"]
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Lista uprawnień dla roli"
+        }
+      },
+      "required": ["roleName", "permissions"]
+    }
+  },
+  "mappings": [
+    {
+      "roleName": "User",
+      "permissions": [
+        "auth:login",
+        "auth:register",
+        "auth:logout",
+        "auth:refresh",
+        "auth:me",
+        "passkey:register",
+        "passkey:login",
+        "passkey:list",
+        "passkey:delete",
+        "passkey:update",
+        "2fa:totp:setup",
+        "2fa:totp:verify",
+        "2fa:totp:login",
+        "2fa:sms:setup",
+        "2fa:sms:verify",
+        "2fa:email:setup",
+        "2fa:email:verify",
+        "2fa:backup-codes:generate",
+        "2fa:backup-codes:verify",
+        "user:read:own",
+        "user:update:own"
+      ]
+    },
+    {
+      "roleName": "Admin",
+      "permissions": [
+        "auth:*",
+        "passkey:*",
+        "2fa:*",
+        "user:*",
+        "admin:users:read",
+        "admin:users:update",
+        "admin:users:lock",
+        "admin:users:unlock",
+        "admin:oauth-providers:read",
+        "admin:oauth-providers:create",
+        "admin:oauth-providers:update",
+        "admin:oauth-providers:delete",
+        "admin:ip-whitelist:read",
+        "admin:ip-whitelist:create",
+        "admin:ip-whitelist:delete",
+        "admin:ip-blacklist:read",
+        "admin:ip-blacklist:create",
+        "admin:ip-blacklist:delete",
+        "audit:logs:read"
+      ]
+    },
+    {
+      "roleName": "SecurityAdmin",
+      "permissions": [
+        "auth:*",
+        "passkey:*",
+        "2fa:*",
+        "user:read",
+        "admin:users:read",
+        "admin:users:lock",
+        "admin:users:unlock",
+        "admin:ip-whitelist:*",
+        "admin:ip-blacklist:*",
+        "audit:*",
+        "security:alerts:read",
+        "security:alerts:resolve"
+      ]
+    },
+    {
+      "roleName": "Auditor",
+      "permissions": [
+        "audit:logs:read",
+        "audit:alerts:read",
+        "user:read"
+      ]
+    }
+  ]
+}
+
+
